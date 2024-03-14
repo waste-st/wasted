@@ -1,0 +1,9 @@
+Press the '⬆️' button at the bottom right to upload a file, you can also drag
+or paste a file in order to upload a new one.
+
+Files can be text, images or various other formats. They are limited in size
+and smaller files will be stored for longer.
+
+Be aware these files are not protected -- they are public, only share things
+you want to be public. Questionable or illegal content is not permitted, logs
+are kept.

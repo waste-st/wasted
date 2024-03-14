@@ -1,0 +1,94 @@
+NAME
+
+  waste.st aka 🗑️.st - A tiny waste^W pastebin
+
+SYNOPSIS
+
+  This is a pastebin. It tries to be minimal but do enough to be useful.
+
+DESCRIPTION
+
+  It's sometimes useful to be able to share small pieces of text or images.
+  Particularly snippets of code, screenshots or other such things. This site
+  allows that, while being as simple as possible.
+
+  Just type on the website or use curl to create a paste:
+
+    curl -d 'some string' waste.st
+
+    echo foo | curl -d @- waste.st
+
+  PUT is also supported:
+
+    curl -T file.txt 🗑️.st
+
+    curl -T file.txt waste.st
+
+  Updating a paste with auth is supported by using a HTTP password.
+
+  Set up some credentials first (do this once):
+
+    uuid=$(uuidgen)
+    echo "machine waste.st login \"\" password $uuid" >> ~/.netrc
+    echo "machine xn--108h.st login \"\" password $uuid" >> ~/.netrc
+
+  (Using the IDN hostname -- 🗑️.st -- needs a recent curl.)
+
+  Then use curl with the --netrc (-n) option to send the credentials:
+
+    url="$(curl -nd 'some data' waste.st)"
+    echo $url
+    curl -nd 'new data' $url
+
+  Pastes are accessible at both https://🗑️.st and https://waste.st
+
+  If you use curl on the paste URL, you'll get the raw content (or otherwise
+  arrange for a "Accept: text/plain" header to be sent). Try it:
+
+    curl waste.st/waste.1
+
+  Illegal or questionable content (doxxing, copyright violations, etc.) is not
+  welcome, it will be deleted and you will be banned.
+
+WRAPPER SCRIPT
+
+  Given the simple curl usage a premade script isn't provided, something as
+  simple as this will work:
+
+    #!/bin/sh
+    curl -nsT "${1:--}" https://waste.st/"$2"
+
+  This allows:
+
+    # Pipe content
+    echo foo | waste
+
+    # Upload some-file
+    waste some-file
+
+    # Pipe content with a filename provided
+    echo foo | waste - foo.txt
+
+    # ANSI support too!
+    tdfiglet -r Hello | waste
+
+RETENTION
+
+  Pastes are deleted after a varying period up to 256 days. The larger the data
+  the sooner it will be deleted. No guarantees either way; if other people
+  paste larger stuff we'll have to force expiry to be sooner.
+
+  If you want to delete a paste sooner, leave the tab open and press the X or
+  use the curl method above and run:
+
+  curl -nX DELETE https://waste.st/...
+
+SEE ALSO
+
+  This takes some inspiration from bin, found at https://github.com/WantGuns/bin
+  and also paste.sh, but not doing encryption.
+
+CONTACT
+
+  Open an issue at https://github.com/waste-st/wasted
+  Or for abuse and paste deletion contact us via https://forms.gle/CQT9146FvSZSdxXE8
