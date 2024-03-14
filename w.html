@@ -477,9 +477,6 @@
   .r {
     float: right;
   }
-  #delete {
-    visibility: hidden;
-  }
   #c {
     position: fixed;
     bottom: 0;
@@ -493,32 +490,41 @@
     -moz-user-select: none;
     user-select: none;
   }
-  .r *, #c * {
+  #c * {
     opacity: 0.25;
+  }
+  #c *, .r * {
     text-decoration: none;
   }
   #save {
     opacity: 0.2;
   }
-  #delete {
-    opacity: 0.3;
-  }
   .r *:hover, #c *:hover, #delete:hover {
     opacity: 1;
+  }
+  #delete {
+    visibility: hidden;
+    opacity: 0.75;
+  }
+  #delete:hover::after {
+    content: "❌";
+  }
+  #delete:hover span {
+    display: none;
   }
   .r select {
     opacity: 0.25;
     margin-right: 2ex;
     max-width: 14ex;
   }
-  .r select:focused, #que:hover, #new:hover, #que:active, #que:hover {
+  .r select:focused, #new:active, #new:hover, #que:active, #que:hover {
     opacity: 1;
   }
 </style>
 <body>
   <div class="f">
     <input id="fn" value="{{ .Name }}" onchange="file()" autocomplete="off">
-    <span class="r">
+    <span id="u" class="r">
       {{ if not (or .Image .Video .IFrame) }}
       <select onchange="syntax()">
         <option {{ if eq .Language "auto" }}selected{{ end }}>auto</option>
@@ -533,7 +539,7 @@
       {{ if not (or .Image .Video .IFrame) }}
       <a id="save" href="/save" title="Save (automatic!)">💾</a>
       {{ end }}
-      <a id="delete" href="/" title="Delete">✖️</a>
+      <a id="delete" href="/" title="Delete"><span>✖️<span></a>
     </span>
   </div>
   <div id="m">
@@ -617,10 +623,10 @@ and then share the URL you're given. For the curl API see the little ?.
       let video = document.querySelector('#m video');
       if (video)
         video.focus();
-      if (location.hash == '#fn') {
-        history.replaceState(null, '', location.pathname);
-        document.querySelector('#delete').style.visibility = 'visible';
-      }
+    }
+    if (location.hash == '#u') {
+      history.replaceState(null, '', location.pathname);
+      document.querySelector('#delete').style.visibility = 'visible';
     }
 
     window.addEventListener("beforeunload", e => {
@@ -637,6 +643,13 @@ and then share the URL you're given. For the curl API see the little ?.
       let progress = document.querySelector("#p");
       progress.style.animation = progress.style.display = '';
       progress.textContent = '🌀';
+    });
+
+    window.addEventListener("popstate", e => {
+      if (id && id != location.pathname.substr(1)) {
+        ta.disabled = true;
+        location.reload();
+      }
     });
 
     document.querySelector("#m").addEventListener("drop", dropHandler);
@@ -805,6 +818,7 @@ and then share the URL you're given. For the curl API see the little ?.
       } catch (e) {
         if (e == 403) {
             alert("Saving a copy, you'll need to share the new URL with your updates");
+            history.pushState(null, '', "/" + id);
             id = "";
             save();
         } else {
@@ -967,9 +981,9 @@ and then share the URL you're given. For the curl API see the little ?.
         }
       } else {
         for (let item of transfer.items) {
-          if (item.type == 'text/uri-list' || item.type == 'text/html') {
+          if (item.type == 'text/uri-list') {
             alert("Unhandled -- copy an image instead of dragging from another site.");
-            console.log("item? ", item.type, transfer.getData(item.type));
+            return;
           }
         }
       }
@@ -998,7 +1012,7 @@ and then share the URL you're given. For the curl API see the little ?.
           }
           document.querySelector('#p').style.animation = 'none';
           document.querySelector('#p').textContent = '✅';
-          location = r.headers.get("Content-Location") + "#fn";
+          location = r.headers.get("Content-Location") + "#u";
         }).catch(e => {
               console.log(e);
           alert(e);

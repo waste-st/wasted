@@ -15,3 +15,6 @@ Dockerfile: ../go-base/Dockerfile Dockerfile.tail
 
 wasted: *.go *.txt *.html go.mod go.sum
 	CGO_ENABLED=0 go build
+
+run: wasted
+	./$^

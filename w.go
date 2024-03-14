@@ -422,7 +422,7 @@ func mutate(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	default:
 		if len(body) > 32 && (string(body[:4]) == "\x7FELF" ||
-			string(body[:4]) == "MZ\x90\x00" ||
+			string(body[:4]) == "MZ\x90\x00" || string(body[:4]) == "MZ\x00\x00" ||
 			string(body[:4]) == "\xfe\xed\xfa\xce" || string(body[:4]) == "\xfe\xed\xfa\xcf") {
 			http.Error(w, "Content not allowed", http.StatusUnsupportedMediaType)
 			return nil
