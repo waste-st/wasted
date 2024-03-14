@@ -12,3 +12,6 @@ docker-debug: Dockerfile
 
 Dockerfile: ../go-base/Dockerfile Dockerfile.tail
 	cat $^ > $@
+
+wasted: *.go *.txt *.html go.mod go.sum
+	CGO_ENABLED=0 go build

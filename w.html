@@ -509,6 +509,7 @@
   .r select {
     opacity: 0.25;
     margin-right: 2ex;
+    max-width: 14ex;
   }
   .r select:focused, #que:hover, #new:hover, #que:active, #que:hover {
     opacity: 1;
@@ -532,7 +533,7 @@
       {{ if not (or .Image .Video .IFrame) }}
       <a id="save" href="/save" title="Save (automatic!)">💾</a>
       {{ end }}
-      <a id="delete" href="/" title="Delete">❌</a>
+      <a id="delete" href="/" title="Delete">✖️</a>
     </span>
   </div>
   <div id="m">

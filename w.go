@@ -169,8 +169,9 @@ func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'self'")
 
 	ct := http.DetectContentType(paste.Text)
-	if ct == "text/html" {
-		ct = "text/plain"
+	ctType, _, _ := mime.ParseMediaType(ct)
+	if ctType == "text/html" {
+		ct = "text/plain; charset=UTF-8"
 	}
 
 	sfd := r.Header.Get("Sec-Fetch-Dest")
@@ -194,7 +195,8 @@ func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	w.Header().Add("Content-Type", ct)
+	w.Header().Set("Content-Type", ct)
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	http.ServeContent(w, r, "", time.Unix(int64(paste.TS), 0), bytes.NewReader(paste.Text))
 	return nil
 }
@@ -448,7 +450,7 @@ func mutate(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	uri := paste.URI(r)
-	w.Header().Add("Content-Location", uri.Path)
+	w.Header().Set("Content-Location", uri.Path)
 
 	if wantSyntax != "" {
 		out, err := Pretty(string(paste.Text), syntax)
