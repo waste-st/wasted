@@ -1,7 +1,7 @@
 .PHONY: all docker
 all: docker
 
-../go-base/Makefile:
+../go-base/Dockerfile:
 	(cd ..; git clone https://github.com/dgl/go-base)
 
 docker: Dockerfile

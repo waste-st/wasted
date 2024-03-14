@@ -71,8 +71,8 @@ COPY --from=build /app /app
 ENTRYPOINT []
 # Run the binary using the final image, to catch a CGO binary using static
 # base, etc. (This costs an extra layer, but worth it.)
-RUN ["/app/w", "-version"]
+RUN ["/app/wasted", "-version"]
 
-CMD ["/app/w", "-listen=:8666"]
+CMD ["/app/wasted", "-listen=:8666"]
 # For development tools.
 EXPOSE 8666
