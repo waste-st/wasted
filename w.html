@@ -791,7 +791,7 @@ and then share the URL you're given. For the curl API see the little ?.
           body: ta.value,
           headers: {
             "Content-Type": "text/plain",
-            "Content-Disposition": `inline; filename="${document.querySelector("#fn").value}"`,
+            "Content-Disposition": contentDisHeader(),
             "X-UUID": uuid,
             "X-Syntax": s || "plain",
           }
