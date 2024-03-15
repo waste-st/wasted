@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🗑️</title>
+<title>{{ if .Name }}{{ .Name }}{{ else if .ID }}{{ .ID }}{{ else }}&#65279;{{ end }}</title>
 <style>
 /* Error */ .chroma .err { color: #ef6155 }
 /* Line */ .chroma .line { display: block; }
@@ -636,6 +636,24 @@ and then share the URL you're given. For the curl API see the little ?.
       history.replaceState(null, '', location.pathname);
       document.querySelector('#delete').style.visibility = 'visible';
     }
+
+    window.addEventListener("load", e => {
+      // This is less data than a rendered emoji as a favicon.
+      const canvas = document.createElement("canvas");
+      canvas.width = 96;
+      canvas.height = 96;
+      const contex = canvas.getContext("2d");
+      contex.font = (navigator.platform == 'Win32' || /Linux/.test(navigator.platform)) ? '80px serif' : '96px serif';
+      contex.textAlign = "left";
+      contex.textBaseline = "top";
+      contex.fillText("🗑️", 0, 14);
+      let oldIcon = document.querySelector("link[rel='shortcut icon']");
+      if (oldIcon) oldIcon.remove();
+      let link = document.createElement("link");
+      link.rel = "shortcut icon";
+      link.href = canvas.toDataURL('image/png');
+      document.head.appendChild(link)
+    });
 
     window.addEventListener("beforeunload", e => {
       if (ta && ta.value.length && sb.style.opacity == '1') {

@@ -90,9 +90,9 @@ func main() {
 			syntax = "ansi"
 		}
 		p := &Paste{
-			id:   id,
-			Name: name,
-			Text: content,
+			id:     id,
+			Name:   name,
+			Text:   content,
 			Syntax: syntax,
 		}
 		p.Save(db)
@@ -190,7 +190,7 @@ func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 
 	refUrl, err := url.Parse(r.Header.Get("Referer"))
 	if paste.id != "bin" && err == nil && len(refUrl.Host) > 0 {
-		if refUrl.Host != "waste.st" && refUrl.Host != "xn--108h.st" && refUrl.Host != "localhost:8666" {
+		if refUrl.Host != "waste.st" && refUrl.Host != "xn--108h.st" && refUrl.Host != r.Host {
 			w.Header().Set("Location", "/r/bin")
 			w.Header().Set("Cache-Control", "no-store")
 			w.WriteHeader(http.StatusFound)
@@ -220,7 +220,6 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 
 	extra := ""
 	lang := "auto"
-	value := ""
 	if len(r.URL.Path) > 1 && r.URL.Path != "/new" {
 		id := r.URL.Path[1:]
 		paste, err := getPaste(id)
@@ -260,6 +259,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 			if strings.HasPrefix(ct, "image/") {
 				ct, data := embedOrURL(paste, ct)
 				return tpl.Execute(w, map[string]interface{}{
+					"ID":      id,
 					"MaxSize": *flagMaxSize,
 					"Name":    paste.Name,
 					"Image":   data,
@@ -268,6 +268,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 			} else if strings.HasPrefix(ct, "video/") {
 				ct, data := embedOrURL(paste, ct)
 				return tpl.Execute(w, map[string]interface{}{
+					"ID":      id,
 					"MaxSize": *flagMaxSize,
 					"Name":    paste.Name,
 					"Video":   data,
@@ -276,6 +277,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 			} else if strings.HasPrefix(ct, "application/pdf") {
 				ct, data := embedOrURL(paste, ct)
 				return tpl.Execute(w, map[string]interface{}{
+					"ID":      id,
 					"MaxSize": *flagMaxSize,
 					"Name":    paste.Name,
 					"IFrame":  data,
@@ -287,6 +289,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 					return err
 				}
 				return tpl.Execute(w, map[string]interface{}{
+					"ID":         id,
 					"Syntax":     template.HTML(out),
 					"Name":       paste.Name,
 					"MaxSize":    *flagMaxSize,
@@ -294,8 +297,12 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 					"Language":   paste.Syntax,
 				})
 			} else {
-				lang = "plain"
-				value = string(paste.Text)
+				return tpl.Execute(w, map[string]interface{}{
+					"MaxSize":    *flagMaxSize,
+					"SyntaxList": syntaxList,
+					"Language":   "plain",
+					"Value":      string(paste.Text),
+				})
 			}
 		}
 	}
@@ -307,7 +314,6 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 		"Extra":      extra,
 		"SyntaxList": syntaxList,
 		"Language":   lang,
-		"Value":      value,
 	})
 }
 
