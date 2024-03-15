@@ -369,6 +369,14 @@
     font-size: 14px;
   }
 
+  code a:* {
+    color: #bbf;
+  }
+
+  code a:visited {
+    color: #bae;
+  }
+
   pre code {
     counter-reset: line;
     outline: none;
@@ -529,7 +537,7 @@
       <select onchange="syntax()">
         <option {{ if eq .Language "auto" }}selected{{ end }}>auto</option>
         <option {{ if eq .Language "plain" }}selected{{ end }} value="plain">plain text</option>
-        <option {{ if eq .Language "ansi" }}selected{{ end }} value="ansi">ANSI escapes</option>
+        <option {{ if eq .Language "ansi" }}selected{{ end }} value="ansi" title="ANSI escape codes, such as raw terminal output">ANSI codes</option>
         <option disabled>──────────</option>
         {{ range .SyntaxList -}}
         <option {{ if eq $.Language . }}selected{{ end }}>{{ . }}</option>
@@ -830,8 +838,11 @@ and then share the URL you're given. For the curl API see the little ?.
 
     function codeEditable(initial=false) {
       let code = document.querySelector("#m code");
-      code.setAttribute("contenteditable", navigator.vendor ==
-        'Google' ? "plaintext-only" : true);
+      // HACK: Make links work for the help page, by not making contenteditable.
+      if (location.pathname != "/waste.1") {
+        code.setAttribute("contenteditable", navigator.vendor ==
+          'Google' ? "plaintext-only" : true);
+      }
       if (!initial) {
         code.focus();
       }

@@ -1,12 +1,12 @@
-NAME
+[1mNAME[m
 
   waste.st aka 🗑️.st - A tiny waste^W pastebin
 
-SYNOPSIS
+[1mSYNOPSIS[m
 
   This is a pastebin. It tries to be minimal but do enough to be useful.
 
-DESCRIPTION
+[1mDESCRIPTION[m
 
   It's sometimes useful to be able to share small pieces of text or images.
   Particularly snippets of code, screenshots or other such things. This site
@@ -50,7 +50,7 @@ DESCRIPTION
   Illegal or questionable content (doxxing, copyright violations, etc.) is not
   welcome, it will be deleted and you will be banned.
 
-WRAPPER SCRIPT
+[1mWRAPPER SCRIPT[m
 
   Given the simple curl usage a premade script isn't provided, something as
   simple as this will work:
@@ -72,7 +72,26 @@ WRAPPER SCRIPT
     # ANSI support too!
     tdfiglet -r Hello | waste
 
-RETENTION
+[1mTIPS[m
+
+  Sometimes you want to upload something from the command line and then edit it
+  a bit. This site deliberately doesn't use cookies to avoid having a tracking
+  ID on each paste, however it does use a temporary UUID associated with each
+  tab.
+
+  If you've followed the steps above to use a uuidgen based auth token with
+  curl, submit something using "curl -n", then open your JavaScript console and
+  enter:
+
+    window.name = 'xxxx-yyyy-zzzz'
+    location.reload()
+
+  Then that paste will be editable. (You can turn this into a bookmarklet.)
+
+  (If you don't want multiple pastes to be linked together then simply close
+  and reopen your browser tab and/or don't use the -n option with curl.)
+
+[1mRETENTION[m
 
   Pastes are deleted after a varying period up to 256 days. The larger the data
   the sooner it will be deleted. No guarantees either way; if other people
@@ -83,12 +102,23 @@ RETENTION
 
   curl -nX DELETE https://waste.st/...
 
-SEE ALSO
+[1mPRIVACY[m
 
-  This takes some inspiration from bin, found at https://github.com/WantGuns/bin
+  We respect your privacy, but unfortunately some people like to abuse sites
+  like this. This means we keep logs of paste creation, including the
+  following:
+
+    - Timestamp
+    - Source IP address
+    - User-Agent
+    - Per tab UUID (see above for details)
+
+[1mSEE ALSO[m
+
+  This takes some inspiration from bin, found at ]1339;url=https://github.com/WantGuns/bin
   and also paste.sh, but not doing encryption.
 
-CONTACT
+[1mCONTACT[m
 
-  Open an issue at https://github.com/waste-st/wasted
-  Or for abuse and paste deletion contact us via https://forms.gle/CQT9146FvSZSdxXE8
+  Open an issue at ]1339;url=https://github.com/waste-st/wasted
+  Or for abuse and paste deletion contact us via ]1339;url=https://forms.gle/CQT9146FvSZSdxXE8

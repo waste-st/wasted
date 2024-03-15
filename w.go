@@ -84,13 +84,16 @@ func main() {
 		content, _ := fs.ReadFile(contentFS, name)
 		id := strings.TrimSuffix(name, filepath.Ext(name))
 		name := ""
+		syntax := ""
 		if id == "waste.1" {
 			name = "WASTE(1)"
+			syntax = "ansi"
 		}
 		p := &Paste{
 			id:   id,
 			Name: name,
 			Text: content,
+			Syntax: syntax,
 		}
 		p.Save(db)
 	}
