@@ -115,10 +115,10 @@
 
 [1mSEE ALSO[m
 
-  This takes some inspiration from bin, found at ]1339;url=https://github.com/WantGuns/bin
+  This takes some inspiration from bin, found at ]8;;https://github.com/WantGuns/bin\https://github.com/WantGuns/bin]8;;]1339;url=https://github.com/WantGuns/bin
   and also paste.sh, but not doing encryption.
 
 [1mCONTACT[m
 
-  Open an issue at ]1339;url=https://github.com/waste-st/wasted
-  Or for abuse and paste deletion contact us via ]1339;url=https://forms.gle/CQT9146FvSZSdxXE8
+  Open an issue at ]8;;https://github.com/waste-st/wasted\https://github.com/waste-st/wasted]8;;]1339;url=https://github.com/waste-st/wasted
+  Or for abuse and paste deletion contact us via ]8;;https://forms.gle/CQT9146FvSZSdxXE8\https://forms.gle/CQT9146FvSZSdxXE8]8;;]1339;url=https://forms.gle/CQT9146FvSZSdxXE8
