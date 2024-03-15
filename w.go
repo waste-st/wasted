@@ -281,7 +281,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 					"IFrame":  data,
 					"CT":      ct,
 				})
-			} else if len(paste.Text) > 0 && len(paste.Text) < 1024*1024 && !strings.HasPrefix(ct, "application/") {
+			} else if len(paste.Text) > 0 && len(paste.Text) < 1024*1024 && (paste.Syntax == "ansi" || !strings.HasPrefix(ct, "application/")) {
 				out, err := Pretty(string(paste.Text), paste.Syntax)
 				if err != nil {
 					return err

@@ -537,7 +537,7 @@
       <select onchange="syntax()">
         <option {{ if eq .Language "auto" }}selected{{ end }}>auto</option>
         <option {{ if eq .Language "plain" }}selected{{ end }} value="plain">plain text</option>
-        <option {{ if eq .Language "ansi" }}selected{{ end }} value="ansi" title="ANSI escape codes, such as raw terminal output">ANSI codes</option>
+        <option {{ if eq .Language "ansi" }}selected{{ end }} value="ansi" title="ANSI X3.64 escape codes, such as raw terminal output">terminal</option>
         <option disabled>──────────</option>
         {{ range .SyntaxList -}}
         <option {{ if eq $.Language . }}selected{{ end }}>{{ . }}</option>

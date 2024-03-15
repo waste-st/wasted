@@ -68,8 +68,8 @@ func analyseMagic(in string) (lang string, ok bool) {
 		}
 	}
 
-	if lang == "" {
-		if strings.Index(in, "\x1B[") != -1 {
+	if lang == "" || lang == "plain" {
+		if strings.Index(in, "\x1B[") != -1 || strings.Index(in, "\x1B]8") != -1 {
 			lang = "ansi"
 		}
 	}
