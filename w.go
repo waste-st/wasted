@@ -171,7 +171,7 @@ func raw(w http.ResponseWriter, r *http.Request) error {
 func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'self'")
 
-	ct := http.DetectContentType(paste.Text)
+	ct := detectCT(paste.Text)
 	ctType, _, _ := mime.ParseMediaType(ct)
 	if ctType == "text/html" {
 		ct = "text/plain; charset=UTF-8"
@@ -202,6 +202,21 @@ func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	http.ServeContent(w, r, "", time.Unix(int64(paste.TS), 0), bytes.NewReader(paste.Text))
 	return nil
+}
+
+func detectCT(data []byte) string {
+	ct := http.DetectContentType(data)
+
+	if ct == "application/octet-stream" && len(data) > 16 {
+		// Non-MP4 but ISO quicktime files...
+		// https://mimesniff.spec.whatwg.org/#signature-for-mp4
+		if string(data[4:4+8]) == "ftypqt  " {
+			ct = "video/quicktime"
+		} else if string(data[4:4+8]) == "ftypheic" {
+			ct = "image/heic"
+		}
+	}
+	return ct
 }
 
 func serve(w http.ResponseWriter, r *http.Request) error {
@@ -254,8 +269,7 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 				return nil
 			}
 
-			ct := http.DetectContentType(paste.Text)
-
+			ct := detectCT(paste.Text)
 			if strings.HasPrefix(ct, "image/") {
 				ct, data := embedOrURL(paste, ct)
 				return tpl.Execute(w, map[string]interface{}{
@@ -424,7 +438,7 @@ func mutate(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	ct := http.DetectContentType(body)
+	ct := detectCT(body)
 	switch ct {
 	case "application/zip", "application/x-rar-compressed", "application/x-gzip":
 		http.Error(w, "Content not allowed", http.StatusUnsupportedMediaType)
@@ -443,6 +457,8 @@ func mutate(w http.ResponseWriter, r *http.Request) error {
 	if strings.ToLower(syntax) == "auto" || syntax == "" {
 		if newSyntax, ok := analyseMagic(string(body)); ok {
 			syntax = newSyntax
+		} else if strings.HasSuffix(name, ".json") {
+			syntax = "json"
 		}
 	}
 
