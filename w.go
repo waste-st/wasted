@@ -137,6 +137,9 @@ func expire() {
 
 			if int64(paste.TS)+expiry <= now {
 				batch.Delete(iter.Key())
+				if len(paste.Text) == 0 {
+					batch.Delete([]byte(string(iter.Key()) + ":data"))
+				}
 			}
 		}
 		iter.Release()
@@ -199,6 +202,10 @@ func serveRaw(paste *Paste, w http.ResponseWriter, r *http.Request) error {
 	}
 
 	w.Header().Set("Content-Type", ct)
+	// We should also say Sec-Fetch-Dest, but per
+	// https://www.haproxy.com/documentation/haproxy-configuration-manual/latest/#6.1
+	// haproxy won't support that.
+	w.Header().Set("Vary", "Referer")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	http.ServeContent(w, r, "", time.Unix(int64(paste.TS), 0), bytes.NewReader(paste.Text))
 	return nil
@@ -500,17 +507,33 @@ func getPaste(id string) (*Paste, error) {
 		return nil, err
 	}
 	paste.id = id
+	if len(paste.Text) == 0 {
+		data, err := db.Get([]byte(id+":data"), nil)
+		if err == nil {
+			paste.Text = data
+		}
+	}
 	return &paste, nil
 }
 
 func (p *Paste) Save(db *leveldb.DB) error {
 	var js bytes.Buffer
+	data := p.Text
+	if len(p.Text) > 8*1024 {
+		p.Text = nil
+		err := db.Put([]byte(p.id+":data"), data, nil)
+		if err != nil {
+			return err
+		}
+	}
 	if err := json.NewEncoder(&js).Encode(p); err != nil {
 		return err
 	}
 
 	log.Print(p.id)
-	return db.Put([]byte(p.id), js.Bytes(), nil)
+	err := db.Put([]byte(p.id), js.Bytes(), nil)
+	p.Text = data
+	return err
 }
 
 func (p *Paste) URI(r *http.Request) *url.URL {
