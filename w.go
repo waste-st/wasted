@@ -115,6 +115,10 @@ func expire() {
 		batch := new(leveldb.Batch)
 		iter := db.NewIterator(nil, nil)
 		for iter.Next() {
+			if strings.Contains(string(iter.Key()), ":") {
+				continue
+			}
+
 			var paste Paste
 			if err := json.NewDecoder(bytes.NewReader(iter.Value())).Decode(&paste); err != nil {
 				log.Print(err)
@@ -318,11 +322,19 @@ func serve(w http.ResponseWriter, r *http.Request) error {
 					"Language":   paste.Syntax,
 				})
 			} else {
+				data := ""
+				if !strings.HasPrefix(ct, "application/") {
+					data = string(paste.Text)
+				} else if len(paste.Text) <= 1024*1024 {
+					data = string(paste.Text)
+				} else {
+					data = string(paste.Text[:1024*1024])
+				}
 				return tpl.Execute(w, map[string]interface{}{
 					"MaxSize":    *flagMaxSize,
 					"SyntaxList": syntaxList,
 					"Language":   "plain",
-					"Value":      string(paste.Text),
+					"Value":      data,
 				})
 			}
 		}
